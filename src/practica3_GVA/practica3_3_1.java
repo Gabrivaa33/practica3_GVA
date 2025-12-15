@@ -77,7 +77,7 @@ class VoiceControlPanel extends JPanel {
     private JButton btnStartStop;
     private JLabel statusLabel;
     private JTextArea logArea;
-    private NuiController nuiController;
+    private NuevoNuiController nuiController;
     private boolean isListening = false;
     private Thread listeningThread;
     
@@ -91,9 +91,9 @@ class VoiceControlPanel extends JPanel {
     private static final float SAMPLE_RATE = 16000;
     
     // Mapeo de palabras a comandos
-    private Map<String, NuiCommand> commandMap = new HashMap<>();
+    private Map<String, NuevoNuiCommand> commandMap = new HashMap<>();
     
-    public VoiceControlPanel(NuiController controller) {
+    public VoiceControlPanel(NuevoNuiController controller) {
         this.nuiController = controller;
         initCommandMap();
         initUI();
@@ -101,27 +101,27 @@ class VoiceControlPanel extends JPanel {
     
     private void initCommandMap() {
         // Español
-        commandMap.put("nuevo", NuiCommand.NUEVO_DOCUMENTO);
-        commandMap.put("nueva", NuiCommand.NUEVO_DOCUMENTO);
-        commandMap.put("abrir", NuiCommand.ABRIR_DOCUMENTO);
-        commandMap.put("guardar", NuiCommand.GUARDAR_DOCUMENTO);
-        commandMap.put("negrita", NuiCommand.APLICAR_NEGRITA);
-        commandMap.put("cursiva", NuiCommand.APLICAR_CURSIVA);
-        commandMap.put("itálica", NuiCommand.APLICAR_CURSIVA);
-        commandMap.put("rojo", NuiCommand.COLOR_ROJO);
-        commandMap.put("azul", NuiCommand.COLOR_AZUL);
-        commandMap.put("escribir", NuiCommand.DICTAR_TEXTO);
-        commandMap.put("dictar", NuiCommand.DICTAR_TEXTO);
+        commandMap.put("nuevo", NuevoNuiCommand.NUEVO_DOCUMENTO);
+        commandMap.put("nueva", NuevoNuiCommand.NUEVO_DOCUMENTO);
+        commandMap.put("abrir", NuevoNuiCommand.ABRIR_DOCUMENTO);
+        commandMap.put("guardar", NuevoNuiCommand.GUARDAR_DOCUMENTO);
+        commandMap.put("negrita", NuevoNuiCommand.APLICAR_NEGRITA);
+        commandMap.put("cursiva", NuevoNuiCommand.APLICAR_CURSIVA);
+        commandMap.put("itálica", NuevoNuiCommand.APLICAR_CURSIVA);
+        commandMap.put("rojo", NuevoNuiCommand.COLOR_ROJO);
+        commandMap.put("azul", NuevoNuiCommand.COLOR_AZUL);
+        commandMap.put("escribir", NuevoNuiCommand.DICTAR_TEXTO);
+        commandMap.put("dictar", NuevoNuiCommand.DICTAR_TEXTO);
         
         // Inglés
-        commandMap.put("new", NuiCommand.NUEVO_DOCUMENTO);
-        commandMap.put("open", NuiCommand.ABRIR_DOCUMENTO);
-        commandMap.put("save", NuiCommand.GUARDAR_DOCUMENTO);
-        commandMap.put("bold", NuiCommand.APLICAR_NEGRITA);
-        commandMap.put("italic", NuiCommand.APLICAR_CURSIVA);
-        commandMap.put("red", NuiCommand.COLOR_ROJO);
-        commandMap.put("blue", NuiCommand.COLOR_AZUL);
-        commandMap.put("write", NuiCommand.DICTAR_TEXTO);
+        commandMap.put("new", NuevoNuiCommand.NUEVO_DOCUMENTO);
+        commandMap.put("open", NuevoNuiCommand.ABRIR_DOCUMENTO);
+        commandMap.put("save", NuevoNuiCommand.GUARDAR_DOCUMENTO);
+        commandMap.put("bold", NuevoNuiCommand.APLICAR_NEGRITA);
+        commandMap.put("italic", NuevoNuiCommand.APLICAR_CURSIVA);
+        commandMap.put("red", NuevoNuiCommand.COLOR_ROJO);
+        commandMap.put("blue", NuevoNuiCommand.COLOR_AZUL);
+        commandMap.put("write", NuevoNuiCommand.DICTAR_TEXTO);
     }
     
     private void initUI() {
@@ -381,20 +381,20 @@ class VoiceControlPanel extends JPanel {
         // Detectar dictado
         if (text.startsWith("escribir ") || text.startsWith("dictar ") || text.startsWith("write ")) {
             String dictationText = voiceText.substring(voiceText.indexOf(" ") + 1);
-            nuiController.fireCommand(NuiCommand.DICTAR_TEXTO, dictationText);
+            nuiController.fireCommand(NuevoNuiCommand.DICTAR_TEXTO, dictationText);
             logMessage("📝 Dictando texto: \"" + dictationText + "\"");
             return;
         }
         
         // Buscar comando exacto
-        NuiCommand command = commandMap.get(text);
+        NuevoNuiCommand command = commandMap.get(text);
         
         if (command != null) {
             nuiController.fireCommand(command);
             logMessage("✅ Comando ejecutado: " + command);
         } else {
             // Buscar coincidencias parciales
-            for (Map.Entry<String, NuiCommand> entry : commandMap.entrySet()) {
+            for (Map.Entry<String, NuevoNuiCommand> entry : commandMap.entrySet()) {
                 if (text.contains(entry.getKey())) {
                     nuiController.fireCommand(entry.getValue());
                     logMessage("✅ Comando ejecutado: " + entry.getValue() + " (por: \"" + entry.getKey() + "\")");
@@ -442,7 +442,7 @@ class VoiceControlPanel extends JPanel {
 // EDITOR PRINCIPAL CON VOZ REAL
 // ============================================
 
-public class practica3_3_1 extends JFrame implements NuiListener {
+public class practica3_3_1 extends JFrame implements NuevoNuiListener {
 
     private JTextPane textPane;
     private JLabel lblChars, lblWords, lblLines;
@@ -452,7 +452,7 @@ public class practica3_3_1 extends JFrame implements NuiListener {
     private File currentFile;
     
     // Componentes NUI de voz
-    private NuiController nuiController;
+    private NuevoNuiController nuiController;
     private VoiceControlPanel voiceControlPanel;
     private int contadorComandosVoz = 0;
     private JLabel lblVozStatus;
@@ -468,7 +468,7 @@ public class practica3_3_1 extends JFrame implements NuiListener {
         ((JPanel) cp).setBorder(new EmptyBorder(6,6,6,6));
 
         // Inicializar capa NUI
-        nuiController = new NuiController();
+        nuiController = new NuevoNuiController();
         nuiController.addListener(this);
         voiceControlPanel = new VoiceControlPanel(nuiController);
         
@@ -596,10 +596,10 @@ public class practica3_3_1 extends JFrame implements NuiListener {
         setVisible(true);
     }
 
-    // ========== IMPLEMENTACIÓN DE NuiListener ==========
+    // ========== IMPLEMENTACIÓN DE NuevoNuiListener ==========
     
     @Override
-    public void onCommand(NuiCommand cmd, String payload) {
+    public void onCommand(NuevoNuiCommand cmd, String payload) {
         SwingUtilities.invokeLater(() -> {
             contadorComandosVoz++;
             lblVozStatus.setText(" | Comandos Voz: " + contadorComandosVoz);
